@@ -1,4 +1,4 @@
-let ws = new WebSocket("ws://localhost:8000");
+socket = io.connect('http://' + document.domain + ':' + location.port + '/game');
 let width_orig = 1920
 let height_orig = 1080
 let width = window.innerWidth
@@ -79,20 +79,11 @@ function sendInputs() {
     message.space = 1
   }
   var m = JSON.stringify(message);
-  ws.send(m);
+  socket.emit("input", m);
 }
 
-ws.onopen = function() {
-  var message = { 
-    "id": -1
-  }
-  var m = JSON.stringify(message);
-  ws.send(m);
-};
-
-ws.onmessage = function(event) {
-  var message = event.data
-  var m = JSON.parse(message)
+socket.on('game_update', function(data) {
+  var m = JSON.parse(data)
   console.log(m.players[0].position);
   switch(m.id) {
     case 0:
@@ -101,4 +92,4 @@ ws.onmessage = function(event) {
       console.log(m);
   }
   // console.log("Received message: " + m.id);
-};
+});
