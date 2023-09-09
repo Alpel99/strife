@@ -8,7 +8,7 @@ class Gamestate():
         self.left_score = 0
         self.right_score = 0
 
-    def getJSON(self):
+    def getData(self):
         gamestate = {
             "id": 0,
             "terrain": self.terrain,
@@ -17,7 +17,8 @@ class Gamestate():
             "left_score": self.left_score,
             "right_score": self.right_score
         }
-        return json.dumps(gamestate)
+        # return json.dumps(gamestate)
+        return gamestate
     
     def addPlayer(self, player):
         self.players[player.id] = player

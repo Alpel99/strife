@@ -76,7 +76,7 @@ async def process_message(data, websocket):
         case -1:
             print(client_id)
             gstate.players[client_id] = Player(client_id)
-            gs = gstate.getJSON()
+            gs = gstate.getData()
             await websocket.send(gs)
         case 0:
             pass # used to send gamestate
@@ -141,7 +141,7 @@ def gameLogic():
         else:
             # simple drop
             if(p.position[1] > gstate.terrain[int(p.position[0])]*H_ARR[0]):
-                p.position[1] -= p.vel[1]
+                p.position[1] += p.vel[1]
     for p in gstate.players.values():
         print(p.position)
 

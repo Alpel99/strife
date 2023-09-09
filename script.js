@@ -7,7 +7,7 @@ let gamestate = null
 let update = true
 
 function setup() {
-  frameRate(60)
+  frameRate(30)
   resizeCanvas(width, height);
 }
   
@@ -19,7 +19,7 @@ function draw() {
     drawPlayers(gamestate.players)
     drawScores(gamestate)
   }
-sendInputs()
+  sendInputs()
 }
 
 function drawTerrain(terrain_arr) {
@@ -37,8 +37,8 @@ function drawTerrain(terrain_arr) {
 
 function drawPlayers(players) {
   players.forEach((p, index) => {
-    console.log(p.position)
-    ellipse(p.position[0], height_orig-p.position[1], 50)
+    console.log(p.vel)
+    ellipse(p.pos[0], height_orig-p.pos[1], 50)
   });
 }
 
@@ -55,7 +55,6 @@ function drawScores(gamestate) {
 
 function sendInputs() {
   var message = {
-    "id": 1,
     "up": 0,
     "right": 0,
     "left": 0,
@@ -78,18 +77,17 @@ function sendInputs() {
   if(keyIsDown(32)) {
     message.space = 1
   }
-  var m = JSON.stringify(message);
-  socket.emit("input", m);
+  // var m = JSON.stringify(message);
+  socket.emit("input", message);
 }
 
 socket.on('game_update', function(data) {
-  var m = JSON.parse(data)
-  console.log(m.players[0].position);
-  switch(m.id) {
+  switch(data.id) {
     case 0:
-      gamestate = m;
+      gamestate = data;
+      break;
     default:
-      console.log(m);
+      console.log(data);
   }
   // console.log("Received message: " + m.id);
 });
