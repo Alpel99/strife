@@ -35,6 +35,7 @@ def index():
 @socketio.on('connect', namespace='/game')
 def game_connect():
     global gstate
+    gstate.generateTerrain()
     client_id = request.sid
     # sid = request.namespace.socket.sessid
     print(f'Client {client_id} connected')
@@ -78,7 +79,8 @@ def movePlayer(p: Player):
         p.jumping = False
         
 def actionPlayer(p):
-    pass
+    if p.pos[1] == HEIGHT-H_ARR[0]*MIN_HEIGHT - PLAYER_HEIGHT:
+        p.death()
 
 # Start the game loop in a separate thread
 if __name__ == '__main__':

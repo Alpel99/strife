@@ -6,6 +6,14 @@ let height = window.innerHeight
 let gamestate = null
 let update = true
 
+var debugID = window.setInterval(callDebug, 500);
+
+function callDebug() {
+  if(gamestate) {
+    console.log(gamestate.terrain)
+  }
+}
+
 function setup() {
   frameRate(30)
   resizeCanvas(width, height);
@@ -29,7 +37,9 @@ function drawTerrain(terrain_arr) {
   strokeWeight(4)
   for(let i = 1; i < terrain_arr.length/width_orig+1; i++) {
     for(let j = 0; j < width_orig; j++) {
-      line(j,height_orig-l_arr[i-1],j,height_orig-(terrain_arr[j*i]*h_arr[i-1]))
+      var low = height_orig-l_arr[i-1]
+      var high = height_orig-(terrain_arr[j*i]*h_arr[i-1])
+      line(j,low,j,high)
     }
   }
   strokeWeight(0)
@@ -37,7 +47,6 @@ function drawTerrain(terrain_arr) {
 
 function drawPlayers(players) {
   players.forEach((p, index) => {
-    console.log(p.vel, p.pos)
     ellipse(p.pos[0], p.pos[1], 50)
   });
 }

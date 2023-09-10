@@ -2,7 +2,7 @@ import json
 from constants import *
 
 class Player():
-    def __init__(self, id) -> None:
+    def __init__(self, id):
         self.id = id
         self.side = False # 0 -> left
         x = 50 if not self.side else 1870
@@ -37,3 +37,7 @@ class Player():
 
         self.vel[1] += GRAVITY
         pass
+
+    def death(self):
+        print("rip")
+        self.__init__(self.id)
