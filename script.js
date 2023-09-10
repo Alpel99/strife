@@ -37,8 +37,8 @@ function drawTerrain(terrain_arr) {
 
 function drawPlayers(players) {
   players.forEach((p, index) => {
-    console.log(p.vel)
-    ellipse(p.pos[0], height_orig-p.pos[1], 50)
+    console.log(p.vel, p.pos)
+    ellipse(p.pos[0], p.pos[1], 50)
   });
 }
 

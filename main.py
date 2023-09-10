@@ -140,7 +140,7 @@ def gameLogic():
             p.position[1] += p.vel[1]
         else:
             # simple drop
-            if(p.position[1] > gstate.terrain[int(p.position[0])]*H_ARR[0]):
+            if(p.position[1] > HEIGHT-gstate.terrain[int(p.position[0])]*H_ARR[0]):
                 p.position[1] += p.vel[1]
     for p in gstate.players.values():
         print(p.position)

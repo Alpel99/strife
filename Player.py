@@ -28,7 +28,7 @@ class Player():
             self.vel[0] -= X_ACCELERATION
         if(self.input["right"] == self.input["left"] and abs(self.vel[0]) > 0):
             change = 2*X_ACCELERATION if abs(self.vel[0]) >= 2*X_ACCELERATION else self.vel[0]
-            # change = -change if self.vel[0] < 0 else change
+            change = -change if self.vel[0] < 0 else change
             self.vel[0] = self.vel[0] - change
 
         if(self.input["space"] == 1 and not self.jumping):

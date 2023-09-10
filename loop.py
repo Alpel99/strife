@@ -71,7 +71,7 @@ def movePlayer(p: Player):
         p.pos[0] += p.vel[0]
         p.pos[0] = min(1920, max(0, p.pos[0]))
     p.pos[1] += p.vel[1]
-    t_height = gstate.terrain[int(p.pos[0])]*H_ARR[0]
+    t_height = HEIGHT-gstate.terrain[min(int(p.pos[0]), 1919)]*H_ARR[0]
     if(p.pos[1] + PLAYER_HEIGHT > t_height):
         p.pos[1] = t_height - PLAYER_HEIGHT
         p.vel[1] = 0
