@@ -3,5 +3,6 @@ __pycache__/
 gamestate.pkl
 
 p5.min.js
+socket.io.js
 
 venv
