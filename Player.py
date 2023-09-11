@@ -2,15 +2,18 @@ import json
 from constants import *
 
 class Player():
-    def __init__(self, id):
+    def __init__(self, id, side):
         self.id = id
-        self.side = False # 0 -> left
+        self.side = side # False: "left", True: "right"
         x = 50 if not self.side else 1870
-        self.pos = [x, 550]
+        self.pos = [x, 0.7*H_ARR[0]]
         self.state = 0
         self.vel = [0,0]
-        self.jumping = False
         self.input = {"up":0,"right":0,"left":0,"down":0,"space":0}
+        self.jumping = True
+        self.blocking = False
+        self.attacking = False
+        self.ducking = False
 
     def getDict(self):
         player = {
@@ -18,6 +21,7 @@ class Player():
             "pos": self.pos,
             "state": self.state,
             "vel": self.vel,
+            "blocking": self.blocking
         }
         return player
     
@@ -30,6 +34,11 @@ class Player():
             change = 2*X_ACCELERATION if abs(self.vel[0]) >= 2*X_ACCELERATION else self.vel[0]
             change = -change if self.vel[0] < 0 else change
             self.vel[0] = self.vel[0] - change
+        if(self.input["up"] == 1):
+            self.vel[0] = 0
+            self.blocking = True
+        else:
+            self.blocking = False
 
         if(self.input["space"] == 1 and not self.jumping):
             self.vel[1] -= JUMP_STRENGTH
@@ -39,5 +48,4 @@ class Player():
         pass
 
     def death(self):
-        print("rip")
-        self.__init__(self.id)
+        self.__init__(self.id, self.side)

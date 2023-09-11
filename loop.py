@@ -2,9 +2,9 @@ import eventlet
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO, emit
 
-import json
 import pickle
 import time
+import random
 
 from Gamestate import Gamestate
 from Player import Player
@@ -39,13 +39,13 @@ def game_connect():
     client_id = request.sid
     # sid = request.namespace.socket.sessid
     print(f'Client {client_id} connected')
-    gstate.players[client_id] = Player(client_id)
+    gstate.addPlayer(client_id)
     socketio.emit('game_update', gstate.getData(), namespace='/game')
 
 @socketio.on('disconnect', namespace='/game')
 def game_disconnect():
     client_id = request.sid
-    del gstate.players[client_id]
+    gstate.removePlayer(client_id)
     print(f'Client {client_id} disconnected')
 
 @socketio.on('input', namespace='/game')
@@ -59,28 +59,36 @@ def updateGameState():
     global gstate
     for p in gstate.players.values():
         p.processInput()
-    playerAction()
+    updatePlayer()
 
-def playerAction():
+def updatePlayer():
     global gstate
     for p in gstate.players.values():
         movePlayer(p)
         actionPlayer(p)
 
 def movePlayer(p: Player):
+    # left/right movement
     if(p.vel[0] > 0 and p.pos[0] < WIDTH or p.vel[0] < 0 and p.pos[0] > 0):
         p.pos[0] += p.vel[0]
-        p.pos[0] = min(1920, max(0, p.pos[0]))
+        p.pos[0] = min(WIDTH-1, max(0, p.pos[0]))
+    # gravity
     p.pos[1] += p.vel[1]
-    t_height = HEIGHT-gstate.terrain[min(int(p.pos[0]), 1919)]*H_ARR[0]
+    # snap to terrain
+    t_height = HEIGHT-gstate.terrain[int(p.pos[0])]*H_ARR[0]
     if(p.pos[1] + PLAYER_HEIGHT > t_height):
         p.pos[1] = t_height - PLAYER_HEIGHT
         p.vel[1] = 0
         p.jumping = False
         
 def actionPlayer(p):
+    # death on low parts of map
+    print(HEIGHT-H_ARR[0]*MIN_HEIGHT - PLAYER_HEIGHT)
     if p.pos[1] == HEIGHT-H_ARR[0]*MIN_HEIGHT - PLAYER_HEIGHT:
         p.death()
+    # hit sides/win
+    if not p.side and p.pos[0] == WIDTH-1 or p.side and p.pos[0] == 0:
+        gstate.win(p.id)
 
 # Start the game loop in a separate thread
 if __name__ == '__main__':

@@ -5,8 +5,10 @@ let width = window.innerWidth
 let height = window.innerHeight
 let gamestate = null
 let update = true
+let h_arr = [500, 800]
+let l_arr = [0, 550]
 
-var debugID = window.setInterval(callDebug, 500);
+// var debugID = window.setInterval(callDebug, 500);
 
 function callDebug() {
   if(gamestate) {
@@ -31,8 +33,6 @@ function draw() {
 }
 
 function drawTerrain(terrain_arr) {
-  h_arr = [500, 800]
-  l_arr = [0, 550]
   stroke(0)
   strokeWeight(4)
   for(let i = 1; i < terrain_arr.length/width_orig+1; i++) {
@@ -42,24 +42,42 @@ function drawTerrain(terrain_arr) {
       line(j,low,j,high)
     }
   }
-  strokeWeight(0)
+  strokeWeight(0);
+  fill(0,128,0);
+  // var h = h_arr[0]*0.03 + 25;
+  // console.log(height_orig-h)
+  rect(0, 1060, width_orig, height_orig);
 }
 
 function drawPlayers(players) {
   players.forEach((p, index) => {
-    ellipse(p.pos[0], p.pos[1], 50)
+    var col = p.side ? color(0,0,255) : color(255,0,0);
+    fill(col);
+    // console.log(p)
+    if(p.blocking) {
+      rect(p.pos[0]-25, p.pos[1]-25, 50, 50);
+    } else if(p.attacking) {
+      var offset = p.side ? -50 : 50
+      triangle(p.pos[0]+offset, p.pos[1], p.pos[0], p.pos[1]-25, p.pos[0], p.pos[1]+25)
+    } else {
+      ellipse(p.pos[0], p.pos[1], 50);
+    }
   });
 }
 
 function drawScores(gamestate) {
-  textSize(40);
+  var t_size_side = 60;
+  var t_size_mid = 80;
+  textSize(t_size_side);
   fill(255,0,0)
-  text(gamestate.left_score.toString(), 100, 50)
+  text(gamestate.left_score.toString(), 100, t_size_side + 5)
   fill(0,0,255)
-  text(gamestate.right_score.toString(), width_orig-100, 50)
-  fill(0,0,255)
-  textSize(55);
-  text(gamestate.global_score.toString(), width_orig/2 - 50, 50)
+  text(gamestate.right_score.toString(), width_orig-100, t_size_side + 5);
+  var col = gamestate.global_score > 0 ? color(0,0,255) : color(255,0,0);
+  var col = gamestate.global_score == 0 ? color(0,0,0) : col;
+  textSize(80);
+  fill(col);
+  text(abs(gamestate.global_score).toString(), width_orig/2 - t_size_mid/2, t_size_mid + 5);
 }
 
 function sendInputs() {
