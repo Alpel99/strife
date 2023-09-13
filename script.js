@@ -24,6 +24,14 @@ function setup() {
 function draw() {
   scale(window.innerWidth/width_orig, window.innerHeight/height_orig)
   background(126);
+  if(!socket.connected) {
+    push();
+    textSize(100);
+    textAlign(CENTER);
+    fill(255,255,0);
+    text("DISCONNECTED", width_orig/2, height_orig/3)
+    pop();
+  }
   if(gamestate) {
     drawTerrain(gamestate.terrain)
     drawPlayers(gamestate.players)
