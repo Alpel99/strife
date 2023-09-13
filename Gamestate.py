@@ -26,7 +26,7 @@ class Gamestate():
         return gamestate
     
     def addPlayer(self, client_id):
-        side = bool(random.getrandbits(1)) if self.side_delta == 0 else False if self.side_delta < 0 else True
+        side = bool(random.getrandbits(1)) if self.side_delta == 0 else True if self.side_delta < 0 else False
         self.side_delta = self.side_delta +1 if side else self.side_delta - 1
         player = Player(client_id, side)
         self.players[client_id] = player

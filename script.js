@@ -18,10 +18,11 @@ function callDebug() {
 
 function setup() {
   frameRate(30)
-  resizeCanvas(width, height);
+  textAlign(CENTER);
 }
   
 function draw() {
+  resizeCanvas(width, height);
   scale(window.innerWidth/width_orig, window.innerHeight/height_orig)
   background(126);
   if(!socket.connected) {
@@ -62,13 +63,22 @@ function drawPlayers(players) {
     var col = p.side ? color(0,0,255) : color(255,0,0);
     fill(col);
     // console.log(p)
-    if(p.blocking) {
-      rect(p.pos[0]-25, p.pos[1]-25, 50, 50);
-    } else if(p.attacking) {
-      var offset = p.side ? -50 : 50
-      triangle(p.pos[0]+offset, p.pos[1], p.pos[0], p.pos[1]-25, p.pos[0], p.pos[1]+25)
-    } else {
-      ellipse(p.pos[0], p.pos[1], 50);
+    var size = 50
+    switch(p.state) {
+      case 1:
+        rect(p.pos[0]-25, p.pos[1]-size/2, 50, 50);
+        break;
+      case 2:
+        ellipse(p.pos[0], p.pos[1]+size/2-size/4, size, size/2);
+        break;
+      case 3:
+        var offset = p.facing ? size/2+50 : -(size/2+50);
+        triangle(p.pos[0]+offset, p.pos[1], p.pos[0], p.pos[1]-size/2, p.pos[0], p.pos[1]+size/2);
+        break;
+      case 0:
+        ellipse(p.pos[0], p.pos[1], size);
+      default:
+        ellipse(p.pos[0], p.pos[1], size);
     }
   });
 }
@@ -89,31 +99,61 @@ function drawScores(gamestate) {
 }
 
 function sendInputs() {
-  var message = {
-    "up": 0,
-    "right": 0,
-    "left": 0,
-    "down": 0,
-    "space": 0
+  var m = {
+    "up": false,
+    "right": false,
+    "left": false,
+    "down": false,
+    "space": false,
+    "attack": false,
+    "dash": false,
   }
-
   if(keyIsDown(65) || keyIsDown(37)) {
-    message.left = 1
+    m.left = true
   }
   if(keyIsDown(87) || keyIsDown(38)) {
-    message.up = 1
+    m.up = true
   }
   if(keyIsDown(68) || keyIsDown(39)) {
-    message.right = 1
+    m.right = true
   }
   if(keyIsDown(83) || keyIsDown(40)) {
-    message.down = 1
+    m.down = true
   }
   if(keyIsDown(32)) {
-    message.space = 1
+    m.space = true
   }
+  if(keyIsDown(81) || keyIsDown(75)) { // Q and K
+    m.attack = true
+  }
+  if(keyIsDown(76) || keyIsDown(69)) { // L and E
+    m.dash = true
+  }
+  drawKeyPressed("W", 100, height_orig-h_arr[0]*0.5+55, m.up);
+  drawKeyPressed("A", 60, height_orig-h_arr[0]*0.5+100, m.left);
+  drawKeyPressed("S", 100, height_orig-h_arr[0]*0.5+100, m.down);
+  drawKeyPressed("D", 140, height_orig-h_arr[0]*0.5+100, m.right);
+
+  drawKeyPressed("SPACE", width_orig-100, height_orig-h_arr[0]*0.5+50, m.space);
+  drawKeyPressed("Q/K", width_orig-100, height_orig-h_arr[0]*0.5+100, m.attack);
+  drawKeyPressed("E/L", width_orig-100, height_orig-h_arr[0]*0.5+150, m.dash);
+
   // var m = JSON.stringify(message);
-  socket.emit("input", message);
+  socket.emit("input", m);
+}
+
+function drawKeyPressed(t, x, y, pressed) {
+  push();
+  textSize(40);
+  fill(255);
+  if (pressed) {
+    strokeWeight(2);
+    stroke(128)
+  } else {
+    strokeWeight(0);
+  }
+  text(t, x, y);
+  pop();
 }
 
 socket.on('game_update', function(data) {

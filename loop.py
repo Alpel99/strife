@@ -68,10 +68,14 @@ def updatePlayer():
         actionPlayer(p)
 
 def movePlayer(p: Player):
+    global gstate
     # left/right movement
     if(p.vel[0] > 0 and p.pos[0] < WIDTH or p.vel[0] < 0 and p.pos[0] > 0):
-        p.pos[0] += p.vel[0]
-        p.pos[0] = min(WIDTH-1, max(0, p.pos[0]))
+        xstep = min(WIDTH-1, max(0, int(p.pos[0] + p.vel[0])))
+        # dont walk over steep terrain, needs jump
+        if(p.pos[1] - (HEIGHT-gstate.terrain[xstep]*H_ARR[0]-PLAYER_HEIGHT) <= abs(2*p.vel[0]) or p.jumping):
+            p.pos[0] += p.vel[0]
+            p.pos[0] = min(WIDTH-1, max(0, p.pos[0]))
     # gravity
     p.pos[1] += p.vel[1]
     # snap to terrain
@@ -83,16 +87,20 @@ def movePlayer(p: Player):
         
 def actionPlayer(p):
     # death on low parts of map
-    print(HEIGHT-H_ARR[0]*MIN_HEIGHT - PLAYER_HEIGHT)
+    # print(HEIGHT-H_ARR[0]*MIN_HEIGHT - PLAYER_HEIGHT)
     if p.pos[1] == HEIGHT-H_ARR[0]*MIN_HEIGHT - PLAYER_HEIGHT:
         p.death()
     # hit sides/win
     if not p.side and p.pos[0] == WIDTH-1 or p.side and p.pos[0] == 0:
         gstate.win(p.id)
+    if p.state == 3:
+        for key in gstate.players.keys():
+            if key != p.id:
+                pass 
 
 # Start the game loop in a separate thread
 if __name__ == '__main__':
     global gstate
     gstate = Gamestate()
     game_thread = eventlet.spawn(game_loop)
-    socketio.run(app, host="localhost", port=8080)
+    socketio.run(app, host="0.0.0.0", port=8080)
