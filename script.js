@@ -7,6 +7,8 @@ let gamestate = null
 let update = true
 let h_arr = [500, 800]
 let l_arr = [0, 550]
+let DASH_CD = 80
+let DASH_DUR = 5
 
 // var debugID = window.setInterval(callDebug, 500);
 
@@ -80,6 +82,12 @@ function drawPlayers(players) {
       default:
         ellipse(p.pos[0], p.pos[1], size);
     }
+    fill(255)
+    angleMode(DEGREES);
+    var ratio = (p.dashing-DASH_DUR)/DASH_CD > 0 ? (p.dashing-DASH_DUR)/DASH_CD : 0;
+    arc(width_orig-100, height_orig-h_arr[0]*0.5+140,  70, 70, -90, -90+360*ratio, PIE);
+    var ratio = (p.attacking-ATT_DUR)/ATT_CD > 0 ? (p.attacking-ATT_DUR)/ATT_CD : 0;
+    arc(width_orig-100, height_orig-h_arr[0]*0.5+90,  70, 70, -90, -90+360*ratio, PIE);
   });
 }
 
@@ -137,7 +145,6 @@ function sendInputs() {
   drawKeyPressed("SPACE", width_orig-100, height_orig-h_arr[0]*0.5+50, m.space);
   drawKeyPressed("Q/K", width_orig-100, height_orig-h_arr[0]*0.5+100, m.attack);
   drawKeyPressed("E/L", width_orig-100, height_orig-h_arr[0]*0.5+150, m.dash);
-
   // var m = JSON.stringify(message);
   socket.emit("input", m);
 }

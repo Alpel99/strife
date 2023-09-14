@@ -38,10 +38,19 @@ class Gamestate():
     def win(self, client_id):
         side = self.players[client_id].side
         self.global_score = self.global_score +1 if side else self.global_score - 1
+        self.left_score = 0
+        self.right_score = 0 
         self.generateTerrain()
         for p in self.players.values():
             p.__init__(p.id, p.side)
 
+    def kill(self, player_id):
+        p = self.players[player_id]
+        if(p.side):
+            self.left_score += 1
+        else:
+            self.right_score += 1
+        p.__init__(p.id, p.side)
 
     def generateTerrain(self):
         noise = PerlinNoise(octaves=5, seed=random.randint(0,2147483647))

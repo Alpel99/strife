@@ -64,6 +64,8 @@ def updateGameState():
 def updatePlayer():
     global gstate
     for p in gstate.players.values():
+        if p.id == "test":
+            p.state = 1
         movePlayer(p)
         actionPlayer(p)
 
@@ -86,21 +88,26 @@ def movePlayer(p: Player):
         p.jumping = False
         
 def actionPlayer(p):
+    global gstate
     # death on low parts of map
     # print(HEIGHT-H_ARR[0]*MIN_HEIGHT - PLAYER_HEIGHT)
     if p.pos[1] == HEIGHT-H_ARR[0]*MIN_HEIGHT - PLAYER_HEIGHT:
-        p.death()
+        gstate.kill(p.id)
     # hit sides/win
     if not p.side and p.pos[0] == WIDTH-1 or p.side and p.pos[0] == 0:
         gstate.win(p.id)
     if p.state == 3:
         for key in gstate.players.keys():
             if key != p.id:
-                pass 
+                res = p.check_hit(gstate.players[key]) 
+                if(res is not False):
+                    gstate.kill(res)
 
 # Start the game loop in a separate thread
 if __name__ == '__main__':
     global gstate
     gstate = Gamestate()
+    gstate.addPlayer("test")
+    gstate.players["test"].pos[0] = WIDTH/2
     game_thread = eventlet.spawn(game_loop)
     socketio.run(app, host="0.0.0.0", port=8080)

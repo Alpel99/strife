@@ -1,6 +1,7 @@
 import json
 import time
 from constants import *
+from utils import circle_triangle_collision
 
 class Player():
     def __init__(self, id, side):
@@ -13,14 +14,17 @@ class Player():
         self.input = {"up":0,"right":0,"left":0,"down":0,"space":0,"attack": 0,"dash":0}
         self.jumping = True
         self.dashing = 0
-        self.attack_time = time.time()
-        self.dash_time = time.time()
+        self.attacking = 0
         self.state = 0
         """
         0: default
         1: blocking
         2: attacking
         3: ducking
+        4: dashing
+        5: duck attack
+        6: dash attack
+        7: dash block
         """
 
     def getDict(self):
@@ -30,6 +34,7 @@ class Player():
             "state": self.state,
             "vel": self.vel,
             "facing": self.facing,
+            "dashing": self.dashing
         }
         return player
     
@@ -59,7 +64,7 @@ class Player():
             self.state = 1
         # duck
         if(self.input["down"]):
-            self.vel[0] = self.vel[0] if abs(self.vel[0]) < MAX_VELOCITY else MAX_VELOCITY/2 if self.vel[0] > 0 else -MAX_VELOCITY/2
+            self.vel[0] = self.vel[0] if abs(self.vel[0]) < MAX_VELOCITY else MAX_VELOCITY/DUCK_SLOW_FACTOR if self.vel[0] > 0 else -MAX_VELOCITY/DUCK_SLOW_FACTOR
             self.state = 2
         # attack
         if(self.input["attack"]):
@@ -74,6 +79,10 @@ class Player():
             dash_vel = DASH_SPEED if self.facing else -DASH_SPEED
             self.vel = [dash_vel, 0]
             self.state = 4
+        if(self.dashing >= DASH_DUR and self.dashing < DASH_DUR + DASH_CD):
+            self.dashing += 1
+        if(self.dashing >= DASH_DUR+DASH_CD):
+            self.dashing = 0
         # dash attack
         if(self.input["dash"] and self.input["attack"]):
             self.state = 6
@@ -84,5 +93,15 @@ class Player():
         self.vel[1] += GRAVITY
         pass
 
-    def death(self):
-        self.__init__(self.id, self.side)
+    def check_hit(self, other):
+        p1 = [self.pos[0], self.pos[1]-PLAYER_HEIGHT]
+        p2 = [self.pos[0], self.pos[1]+PLAYER_HEIGHT]
+        offset = PLAYER_WIDTH+50 if self.facing else -(PLAYER_WIDTH+50)
+        p3 = [self.pos[0] + offset, self.pos[1]]
+        if(circle_triangle_collision(other.pos, PLAYER_WIDTH, [p1, p2, p3])):
+            if other.state == 1 or other.state == 7:
+                return self.id
+            else:
+                return other.id
+        else:
+            return False
