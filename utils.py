@@ -5,20 +5,27 @@ def point_distance(point1, point2):
     x2, y2 = point2
     return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
 
+def midpoint(p1, p2):
+    return [(p1[0]+p2[0])/2, (p1[1]+p2[1])/2]
 
 def circle_triangle_collision(circle_center, circle_radius, triangle_vertices):
     closest_point = None
     min_distance = float('inf')
 
     # create midpoints to check dist, aswell!
+    p1 = midpoint(triangle_vertices[0], triangle_vertices[1])
+    p2 = midpoint(triangle_vertices[0], triangle_vertices[2])
+    p3 = midpoint(triangle_vertices[1], triangle_vertices[2])
+
+    triangle_vertices.extend([p1, p2, p3])
     for vertex in triangle_vertices:
         distance = point_distance(circle_center, vertex)
         if distance < min_distance:
             min_distance = distance
             closest_point = vertex
 
-    print(min_distance, circle_radius)
-    if min_distance <= circle_radius or isInside(*triangle_vertices, circle_center):
+    # print(min_distance, circle_radius)
+    if min_distance <= circle_radius or isInside(*triangle_vertices[:3], circle_center):
         return True
     else:
         return False

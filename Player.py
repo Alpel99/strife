@@ -31,6 +31,7 @@ class Player():
 
     def getDict(self):
         player = {
+            "id": self.id,
             "side": self.side,
             "pos": self.pos,
             "state": self.state,
@@ -43,6 +44,7 @@ class Player():
     
     def processInput(self):
         self.state = 0
+        # print(self.dashing, self.attacking)
         # x vel input
         if(self.input["right"]):
             self.facing = True

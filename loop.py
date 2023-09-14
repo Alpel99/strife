@@ -35,7 +35,8 @@ def index():
 @socketio.on('connect', namespace='/game')
 def game_connect():
     global gstate
-    gstate.generateTerrain()
+    gstate.terrain = gstate.generateTerrain()
+    gstate.platforms = gstate.generatePlatforms()
     client_id = request.sid
     # sid = request.namespace.socket.sessid
     print(f'Client {client_id} connected')

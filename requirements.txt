@@ -1,0 +1,4 @@
+eventlet==0.33.3
+Flask==2.3.3
+Flask_SocketIO==5.3.6
+perlin_noise==1.12

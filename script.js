@@ -5,7 +5,7 @@ let width = window.innerWidth
 let height = window.innerHeight
 let gamestate = null
 let update = true
-let h_arr = [500, 800]
+let h_arr = [500, height_orig-550]
 let l_arr = [0, 550]
 let DASH_CD = 80
 let DASH_DUR = 5
@@ -34,25 +34,27 @@ function draw() {
     textSize(100);
     textAlign(CENTER);
     fill(255,255,0);
-    text("DISCONNECTED", width_orig/2, height_orig/3)
+    text("DISCONNECTED", width_orig/2, height_orig/3);
     pop();
   }
   if(gamestate) {
-    drawTerrain(gamestate.terrain)
-    drawPlayers(gamestate.players)
-    drawScores(gamestate)
+    drawTerrain(gamestate.terrain);
+    drawPlatforms(gamestate.platforms);
+    drawPlayers(gamestate.players);
+    drawScores(gamestate);
+    drawCooldown(gamestate.players);
   }
-  sendInputs()
+  sendInputs();
 }
 
 function drawTerrain(terrain_arr) {
-  stroke(0)
-  strokeWeight(4)
+  stroke(0);
+  strokeWeight(2);
   for(let i = 1; i < terrain_arr.length/width_orig+1; i++) {
     for(let j = 0; j < width_orig; j++) {
-      var low = height_orig-l_arr[i-1]
-      var high = height_orig-(terrain_arr[j*i]*h_arr[i-1])
-      line(j,low,j,high)
+      var low = height_orig-l_arr[i-1];
+      var high = height_orig-(terrain_arr[j*i]*h_arr[i-1]);
+      line(j,low,j,high);
     }
   }
   strokeWeight(0);
@@ -60,6 +62,20 @@ function drawTerrain(terrain_arr) {
   // var h = h_arr[0]*0.03 + 25;
   // console.log(height_orig-h)
   rect(0, 1060, width_orig, height_orig);
+}
+
+function drawPlatforms(platforms_arr) {
+  stroke(0);
+  strokeWeight(4);
+  for(let i = 0; i < width_orig; i++) {
+    if(platforms_arr[i][0] != platforms_arr[i][1]) {
+      var low = h_arr[1]*(1-platforms_arr[i][0]);
+      var high = h_arr[1]*(1-platforms_arr[i][1]);
+      line(i,low,i,high);
+      console.log(low, high);
+    }
+  }
+  strokeWeight(0);
 }
 
 function drawPlayers(players) {
@@ -84,13 +100,23 @@ function drawPlayers(players) {
       default:
         ellipse(p.pos[0], p.pos[1], size);
     }
-    fill(255,255,255,128)
-    angleMode(DEGREES);
-    var ratio = (p.dashing-DASH_DUR)/DASH_CD > 0 ? (p.dashing-DASH_DUR)/DASH_CD : 0;
-    arc(width_orig-100, height_orig-h_arr[0]*0.5+140,  70, 70, -90, -90+360*ratio, PIE);
-    var att_ratio = (p.attacking-ATT_DUR)/ATT_CD > 0 ? (p.attacking-ATT_DUR)/ATT_CD : 0;
-    arc(width_orig-100, height_orig-h_arr[0]*0.5+90,  70, 70, -90, -90+360*att_ratio, PIE);
   });
+}
+
+function drawCooldown(players) {
+  var p_ind = 0
+  players.forEach((p, index) => {
+    if(p.id == socket.id) {
+      p_ind = index;
+    }
+  });
+  p = players[p_ind];
+  fill(255,255,255,128);
+  angleMode(DEGREES);
+  var ratio = (p.dashing-DASH_DUR)/DASH_CD > 0 ? (p.dashing-DASH_DUR)/DASH_CD : 0;
+  arc(width_orig-100, height_orig-h_arr[0]*0.5+140,  70, 70, -90, -90+360*ratio, PIE);
+  var att_ratio = (p.attacking-ATT_DUR)/ATT_CD > 0 ? (p.attacking-ATT_DUR)/ATT_CD : 0;
+  arc(width_orig-100, height_orig-h_arr[0]*0.5+90,  70, 70, -90, -90+360*att_ratio, PIE);
 }
 
 function drawScores(gamestate) {
