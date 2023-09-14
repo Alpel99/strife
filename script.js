@@ -9,6 +9,8 @@ let h_arr = [500, 800]
 let l_arr = [0, 550]
 let DASH_CD = 80
 let DASH_DUR = 5
+let ATT_DUR = 8
+let ATT_CD = 24
 
 // var debugID = window.setInterval(callDebug, 500);
 
@@ -82,12 +84,12 @@ function drawPlayers(players) {
       default:
         ellipse(p.pos[0], p.pos[1], size);
     }
-    fill(255)
+    fill(255,255,255,128)
     angleMode(DEGREES);
     var ratio = (p.dashing-DASH_DUR)/DASH_CD > 0 ? (p.dashing-DASH_DUR)/DASH_CD : 0;
     arc(width_orig-100, height_orig-h_arr[0]*0.5+140,  70, 70, -90, -90+360*ratio, PIE);
-    var ratio = (p.attacking-ATT_DUR)/ATT_CD > 0 ? (p.attacking-ATT_DUR)/ATT_CD : 0;
-    arc(width_orig-100, height_orig-h_arr[0]*0.5+90,  70, 70, -90, -90+360*ratio, PIE);
+    var att_ratio = (p.attacking-ATT_DUR)/ATT_CD > 0 ? (p.attacking-ATT_DUR)/ATT_CD : 0;
+    arc(width_orig-100, height_orig-h_arr[0]*0.5+90,  70, 70, -90, -90+360*att_ratio, PIE);
   });
 }
 

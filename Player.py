@@ -10,6 +10,8 @@ class Player():
         self.facing = not side
         x = 50 if not self.side else 1870
         self.pos = [x, 0.7*H_ARR[0]]
+        if id == "test":
+            self.pos[0] = WIDTH/2
         self.vel = [0,0]
         self.input = {"up":0,"right":0,"left":0,"down":0,"space":0,"attack": 0,"dash":0}
         self.jumping = True
@@ -34,7 +36,8 @@ class Player():
             "state": self.state,
             "vel": self.vel,
             "facing": self.facing,
-            "dashing": self.dashing
+            "dashing": self.dashing,
+            "attacking": self.attacking,
         }
         return player
     
@@ -67,11 +70,17 @@ class Player():
             self.vel[0] = self.vel[0] if abs(self.vel[0]) < MAX_VELOCITY else MAX_VELOCITY/DUCK_SLOW_FACTOR if self.vel[0] > 0 else -MAX_VELOCITY/DUCK_SLOW_FACTOR
             self.state = 2
         # attack
-        if(self.input["attack"]):
+        # print(self.attacking)
+        if((self.input["attack"] or self.attacking != 0) and self.attacking < ATT_DUR):
             self.state = 3
+            self.attacking += 1
         # low attack
-        if(self.input["attack"] and self.input["down"]):
+        if(self.attacking > 0 and self.input["down"]):
             self.state = 5
+        if(self.attacking >= ATT_DUR and self.attacking < ATT_DUR + ATT_CD):
+            self.attacking += 1
+        if(self.attacking >= ATT_DUR + ATT_CD):
+            self.attacking = 0
         # dash
         if((self.input["dash"]) or self.dashing != 0) and self.dashing < DASH_DUR:
             # print(self.dashing)
@@ -84,10 +93,10 @@ class Player():
         if(self.dashing >= DASH_DUR+DASH_CD):
             self.dashing = 0
         # dash attack
-        if(self.input["dash"] and self.input["attack"]):
+        if(self.attacking > 0 and self.attacking < ATT_DUR and self.dashing > 0 and self.dashing < DASH_DUR):
             self.state = 6
         # dash block
-        if(self.input["dash"] and self.input["up"]):
+        if(self.dashing > 0 and self.dashing < DASH_DUR and self.input["up"]):
             self.state = 7
 
         self.vel[1] += GRAVITY

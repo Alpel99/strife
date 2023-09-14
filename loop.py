@@ -108,6 +108,5 @@ if __name__ == '__main__':
     global gstate
     gstate = Gamestate()
     gstate.addPlayer("test")
-    gstate.players["test"].pos[0] = WIDTH/2
     game_thread = eventlet.spawn(game_loop)
     socketio.run(app, host="0.0.0.0", port=8080)
