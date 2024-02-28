@@ -76,13 +76,15 @@ def movePlayer(p: Player):
     if(p.vel[0] > 0 and p.pos[0] < WIDTH or p.vel[0] < 0 and p.pos[0] > 0):
         xstep = min(WIDTH-1, max(0, int(p.pos[0] + p.vel[0])))
         # dont walk over steep terrain, needs jump
-        if(p.pos[1] - (HEIGHT-gstate.terrain[xstep]*H_ARR[0]-PLAYER_HEIGHT) <= abs(2*p.vel[0]) or p.jumping):
+        if(p.pos[1] - (HEIGHT-gstate.terrain[xstep][1]-PLAYER_HEIGHT) <= abs(2*p.vel[0]) or p.jumping):
             p.pos[0] += p.vel[0]
             p.pos[0] = min(WIDTH-1, max(0, p.pos[0]))
     # gravity
     p.pos[1] += p.vel[1]
     # snap to terrain
-    t_height = HEIGHT-gstate.terrain[int(p.pos[0])]*H_ARR[0]
+    # TODO: snap to platforms if above
+    t_height = HEIGHT-gstate.terrain[int(p.pos[0])][1]
+    p_height = HEIGHT-gstate.platforms[int(p.pos[0])][1]
     if(p.pos[1] + PLAYER_HEIGHT > t_height):
         p.pos[1] = t_height - PLAYER_HEIGHT
         p.vel[1] = 0

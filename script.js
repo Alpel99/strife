@@ -49,13 +49,11 @@ function draw() {
 
 function drawTerrain(terrain_arr) {
   stroke(0);
-  strokeWeight(2);
-  for(let i = 1; i < terrain_arr.length/width_orig+1; i++) {
-    for(let j = 0; j < width_orig; j++) {
-      var low = height_orig-l_arr[i-1];
-      var high = height_orig-(terrain_arr[j*i]*h_arr[i-1]);
-      line(j,low,j,high);
-    }
+  strokeWeight(1);
+  for(let i = 1; i < terrain_arr.length; i++) {
+    var low = height_orig - terrain_arr[i][0];
+    var high = height_orig - terrain_arr[i][1];
+    line(i,low,i,high);
   }
   strokeWeight(0);
   fill(0,128,0);
@@ -66,14 +64,11 @@ function drawTerrain(terrain_arr) {
 
 function drawPlatforms(platforms_arr) {
   stroke(0);
-  strokeWeight(4);
-  for(let i = 0; i < width_orig; i++) {
-    if(platforms_arr[i][0] != platforms_arr[i][1]) {
-      var low = h_arr[1]*(1-platforms_arr[i][0]);
-      var high = h_arr[1]*(1-platforms_arr[i][1]);
-      line(i,low,i,high);
-      console.log(low, high);
-    }
+  strokeWeight(1);
+  for(let i = 0; i < platforms_arr.length; i++) {
+    var low = height_orig - platforms_arr[i][0];
+    var high = height_orig - platforms_arr[i][1] - platforms_arr[i][0];
+    line(i,low,i,high);
   }
   strokeWeight(0);
 }
