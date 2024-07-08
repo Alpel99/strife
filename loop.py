@@ -81,11 +81,22 @@ def movePlayer(p: Player):
             p.pos[0] = min(WIDTH-1, max(0, p.pos[0]))
     # gravity
     p.pos[1] += p.vel[1]
+    if p.jumping and p.vel[1] < 0:
+        p.falling = True
     # snap to terrain
     # TODO: snap to platforms if above
     t_height = HEIGHT-gstate.terrain[int(p.pos[0])][1]
-    p_height = HEIGHT-gstate.platforms[int(p.pos[0])][1]
-    if(p.pos[1] + PLAYER_HEIGHT > t_height):
+    p_height = HEIGHT-gstate.platforms[int(p.pos[0])][0]-gstate.platforms[int(p.pos[0])][1]
+    p_h = p.pos[1] + PLAYER_HEIGHT
+    if p.id is not "test":
+        print(p_h, t_height, p_height)
+
+
+    if(p_h > p_height):
+        p.pos[1] = p_height - PLAYER_HEIGHT
+        p.vel[1] = 0
+        p.jumping = False
+    elif(p_h > t_height):
         p.pos[1] = t_height - PLAYER_HEIGHT
         p.vel[1] = 0
         p.jumping = False

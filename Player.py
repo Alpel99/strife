@@ -15,6 +15,7 @@ class Player():
         self.vel = [0,0]
         self.input = {"up":0,"right":0,"left":0,"down":0,"space":0,"attack": 0,"dash":0}
         self.jumping = True
+        self.falling = True
         self.dashing = 0
         self.attacking = 0
         self.state = 0

@@ -7,7 +7,7 @@ from constants import *
 class Gamestate():
     def __init__(self):
         self.terrain = self.generateTerrain()
-        print(self.terrain)
+        # print(self.terrain)
         self.platforms = self.generatePlatforms()
         print(self.platforms)
         self.players = {}

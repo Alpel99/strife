@@ -11,8 +11,13 @@ let DASH_CD = 80
 let DASH_DUR = 5
 let ATT_DUR = 8
 let ATT_CD = 24
-
+let IDLE_1, IMG_IDLE
 // var debugID = window.setInterval(callDebug, 500);
+
+function preload(){
+  IMG_IDLE = loadImage("res/IDLE.png")
+  IDLE_1 = IMG_IDLE.get(0,0,200,112)
+}
 
 function callDebug() {
   if(gamestate) {
@@ -23,6 +28,7 @@ function callDebug() {
 function setup() {
   frameRate(30)
   textAlign(CENTER);
+  image(IMG_IDLE, 0, 0, 500, 112)
 }
   
 function draw() {
@@ -59,6 +65,7 @@ function drawTerrain(terrain_arr) {
   fill(0,128,0);
   // var h = h_arr[0]*0.03 + 25;
   // console.log(height_orig-h)
+  // this 1060 should be height_orig-20 (some constant)
   rect(0, 1060, width_orig, height_orig);
 }
 
@@ -91,8 +98,10 @@ function drawPlayers(players) {
         triangle(p.pos[0]+offset, p.pos[1], p.pos[0], p.pos[1]-size/2, p.pos[0], p.pos[1]+size/2);
         break;
       case 0:
+        // image(IDLE_1, p.pos[0], p.pos[1], 200, 112)
         ellipse(p.pos[0], p.pos[1], size);
       default:
+        // image(IDLE_1, p.pos[0], p.pos[1], 200, 112)
         ellipse(p.pos[0], p.pos[1], size);
     }
   });
